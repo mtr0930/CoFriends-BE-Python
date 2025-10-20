@@ -58,9 +58,9 @@ class Settings(BaseSettings):
     def get_cors_origins_for_environment(self) -> str:
         """Get CORS origins based on environment"""
         if self.ENVIRONMENT.lower() in ["prod", "production"]:
-            return "http://54.180.71.13:3000,http://54.180.71.13:5173,https://buildpechatbot.com"
+            return "http://54.180.71.13:3000,http://54.180.71.13:5173,https://buildpechatbot.com,https://buildpechatbot.com:5000"
         else:
-            return "http://localhost:3000,http://localhost:5173"
+            return "http://localhost:3000,http://localhost:5173,http://localhost:5000"
     
     @property
     def DATABASE_URL(self) -> str:

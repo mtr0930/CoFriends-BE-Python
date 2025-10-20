@@ -12,6 +12,21 @@ from datetime import datetime
 router = APIRouter(prefix="/sse", tags=["Server-Sent Events"])
 
 
+def get_cors_headers(request: Request) -> dict:
+    """Get CORS headers based on request origin"""
+    origin = request.headers.get("origin", "*")
+    return {
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Cache-Control, X-Requested-With",
+        "X-Accel-Buffering": "no",
+        "X-Content-Type-Options": "nosniff"
+    }
+
+
 @router.get("/events")
 async def sse_events(
     request: Request,
@@ -73,14 +88,7 @@ async def sse_events(
     return StreamingResponse(
         event_generator(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Cache-Control",
-            "X-Accel-Buffering": "no",
-            "X-Content-Type-Options": "nosniff"
-        }
+        headers=get_cors_headers(request)
     )
 
 
@@ -118,12 +126,7 @@ async def sse_votes(
     return StreamingResponse(
         vote_event_generator(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Access-Control-Allow-Origin": "*",
-            "X-Accel-Buffering": "no"
-        }
+        headers=get_cors_headers(request)
     )
 
 
@@ -150,12 +153,7 @@ async def sse_chat(
     return StreamingResponse(
         chat_event_generator(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Access-Control-Allow-Origin": "*",
-            "X-Accel-Buffering": "no"
-        }
+        headers=get_cors_headers(request)
     )
 
 
@@ -182,12 +180,7 @@ async def sse_ai(
     return StreamingResponse(
         ai_event_generator(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Access-Control-Allow-Origin": "*",
-            "X-Accel-Buffering": "no"
-        }
+        headers=get_cors_headers(request)
     )
 
 
