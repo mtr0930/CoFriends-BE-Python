@@ -3,6 +3,7 @@ Application configuration using pydantic-settings
 """
 from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from .secrets_manager import load_secrets_to_environment
 
 
 class Settings(BaseSettings):
@@ -34,29 +35,32 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str = "1234"
     REDIS_DB: int = 0
     
-    # Naver API Configuration
-    NAVER_CLIENT_ID: str = ""
-    NAVER_CLIENT_SECRET: str = ""
-    NAVER_SEARCH_URL: str = "https://openapi.naver.com/v1/search/local.json"
     
     # Slack Configuration
     SLACK_CLIENT_ID: str = ""
     SLACK_CLIENT_SECRET: str = ""
     SLACK_REDIRECT_URI: str = ""
     
-    # CORS Configuration
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    # CORS Configuration - will be set dynamically based on environment
+    CORS_ORIGINS: str = ""
     
     # AWS Bedrock Configuration
     AWS_ACCESS_KEY_ID: str = ""
     AWS_SECRET_ACCESS_KEY: str = ""
-    AWS_REGION: str = "us-east-1"
+    AWS_REGION: str = "ap-northeast-2"
     BEDROCK_MODEL_ID: str = "anthropic.claude-3-sonnet-20240229-v1:0"
     
     @property
     def cors_origins_list(self) -> List[str]:
         """Get CORS origins as list"""
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+    
+    def get_cors_origins_for_environment(self) -> str:
+        """Get CORS origins based on environment"""
+        if self.ENVIRONMENT.lower() in ["prod", "production"]:
+            return "http://54.180.71.13:3000,http://54.180.71.13:5173,https://buildpechatbot.com"
+        else:
+            return "http://localhost:3000,http://localhost:5173"
     
     @property
     def DATABASE_URL(self) -> str:
@@ -71,5 +75,11 @@ class Settings(BaseSettings):
     )
 
 
+# Load secrets from AWS Secrets Manager before creating settings
+load_secrets_to_environment()
+
 settings = Settings()
+
+# Set CORS origins based on environment after settings creation
+settings.CORS_ORIGINS = settings.get_cors_origins_for_environment()
 

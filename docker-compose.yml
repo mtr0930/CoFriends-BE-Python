@@ -82,14 +82,12 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: 1234
       REDIS_DB: 0
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
-      NAVER_SEARCH_URL: https://openapi.naver.com/v1/search/local.json
+      # Slack Configuration - will be loaded from AWS Secrets Manager in production
       SLACK_CLIENT_ID: ${SLACK_CLIENT_ID}
       SLACK_CLIENT_SECRET: ${SLACK_CLIENT_SECRET}
       SLACK_REDIRECT_URI: ${SLACK_REDIRECT_URI}
-      CORS_ORIGINS: http://localhost:3000,http://localhost:5173
-      # AWS Bedrock Configuration
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      # AWS Bedrock Configuration - will be loaded from AWS Secrets Manager in production
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
