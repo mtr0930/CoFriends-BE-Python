@@ -10,7 +10,7 @@ pipeline {
         
         // 프로덕션 환경 설정
         ENVIRONMENT = 'prod'
-        CORS_ORIGINS = 'http://54.180.71.13:3000,http://54.180.71.13:5173,https://buildpechatbot.com'
+        CORS_ORIGINS = 'http://54.180.71.13:3000,http://54.180.71.13:5173,https://buildpechatbot.com:5000,https://buildpechatbot.com:5173'
     }
 
     stages {

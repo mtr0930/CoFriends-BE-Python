@@ -13,18 +13,30 @@ router = APIRouter(prefix="/sse", tags=["Server-Sent Events"])
 
 
 def get_cors_headers(request: Request) -> dict:
-    """Get CORS headers based on request origin"""
-    origin = request.headers.get("origin", "*")
+    """Get CORS headers for SSE"""
     return {
-        "Cache-Control": "no-cache",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
         "Connection": "keep-alive",
-        "Access-Control-Allow-Origin": origin,
-        "Access-Control-Allow-Credentials": "true",
+        "Content-Type": "text/event-stream",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Cache-Control, X-Requested-With",
+        "Access-Control-Allow-Headers": "*",
         "X-Accel-Buffering": "no",
-        "X-Content-Type-Options": "nosniff"
     }
+
+
+@router.options("/events")
+async def sse_events_options():
+    """OPTIONS handler for CORS preflight"""
+    from fastapi.responses import Response
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
 
 
 @router.get("/events")
@@ -40,7 +52,7 @@ async def sse_events(
     async def event_generator():
         """SSE 이벤트 스트림 생성"""
         try:
-            print(f"✅ SSE connected: {client_id}")
+            print(f"✅ SSE connected: {client_id} from origin: {request.headers.get('origin', 'unknown')}")
             
             # 연결 확인 메시지
             yield f"data: {json.dumps({'type': 'connection_ack', 'data': {'client_id': client_id, 'channels': channels, 'message': 'Connected to real-time events'}})}\n\n"
