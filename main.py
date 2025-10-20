@@ -68,6 +68,10 @@ app.add_middleware(
 # Include API routes with /api prefix
 app.include_router(api_router, prefix="/api")
 
+# Include auth routes separately (no /api prefix for nginx routing)
+from app.api import slack
+app.include_router(slack.router)
+
 # Include SSE routes separately (no /api prefix for nginx routing)
 app.include_router(sse_router)
 
