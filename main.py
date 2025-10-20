@@ -65,8 +65,10 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# Include API routes
-app.include_router(api_router)
+# Include API routes with /api prefix
+app.include_router(api_router, prefix="/api")
+
+# Include SSE routes separately (no /api prefix for nginx routing)
 app.include_router(sse_router)
 
 

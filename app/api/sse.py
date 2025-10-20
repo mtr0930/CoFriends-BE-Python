@@ -1,29 +1,36 @@
 """
-Server-Sent Events API - 단순하고 안정적인 구현
-복잡한 매니저 없이 직접 스트림
+Server-Sent Events API - Production-ready SSE implementation
+Following world best practices for SSE in production environments
 """
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from typing import Optional
+from typing import Optional, List
 import json
 import asyncio
+import logging
 from datetime import datetime
+from app.core.config import settings
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/sse", tags=["Server-Sent Events"])
 
 
-def get_cors_headers(request: Request) -> dict:
-    """Get CORS headers for SSE"""
+def get_sse_headers(request: Request) -> dict:
+    """Get optimized SSE headers following best practices"""
     origin = request.headers.get('origin', '*')
     return {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Connection": "keep-alive",
-        "Content-Type": "text/event-stream",
+        "Content-Type": "text/event-stream; charset=utf-8",
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Allow-Credentials": "true",
-        "X-Accel-Buffering": "no",
+        "X-Accel-Buffering": "no",  # Disable nginx buffering
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
     }
 
 
@@ -46,22 +53,49 @@ async def sse_events_options(request: Request):
 @router.get("/events")
 async def sse_events(
     request: Request,
-    client_id: str,
-    channels: Optional[str] = None
+    client_id: str = Query(..., description="Client identifier for SSE connection"),
+    channels: Optional[str] = Query(None, description="Comma-separated list of channels to subscribe to")
 ):
     """
-    Server-Sent Events 엔드포인트 - 단순한 구현
+    Production-ready Server-Sent Events endpoint
+    Features:
+    - Proper error handling and logging
+    - Connection validation
+    - Graceful disconnection
+    - Optimized for production environments
     """
     
+    # Validate client_id
+    if not client_id or len(client_id.strip()) == 0:
+        raise HTTPException(status_code=400, detail="client_id is required")
+    
+    # Parse channels
+    channel_list = []
+    if channels:
+        channel_list = [ch.strip() for ch in channels.split(',') if ch.strip()]
+    
+    logger.info(f"SSE connection initiated: client_id={client_id}, channels={channel_list}, origin={request.headers.get('origin', 'unknown')}")
+    
     async def event_generator():
-        """SSE 이벤트 스트림 생성"""
+        """Production-ready SSE event stream generator"""
+        connection_start = datetime.now()
+        ping_count = 0
+        
         try:
-            print(f"✅ SSE connected: {client_id} from origin: {request.headers.get('origin', 'unknown')}")
+            # Send connection acknowledgment
+            ack_data = {
+                'type': 'connection_ack',
+                'data': {
+                    'client_id': client_id,
+                    'channels': channel_list,
+                    'message': 'Connected to real-time events',
+                    'server_time': datetime.now().isoformat(),
+                    'connection_id': f"{client_id}_{int(connection_start.timestamp())}"
+                }
+            }
+            yield f"data: {json.dumps(ack_data, ensure_ascii=False)}\n\n"
             
-            # 연결 확인 메시지
-            yield f"data: {json.dumps({'type': 'connection_ack', 'data': {'client_id': client_id, 'channels': channels, 'message': 'Connected to real-time events'}})}\n\n"
-            
-            # 초기 데이터 전송
+            # Send initial data
             initial_data = {
                 "menu_votes": [],
                 "place_votes": [],
@@ -70,41 +104,56 @@ async def sse_events(
                 "active_voters": 0,
                 "last_updated": int(datetime.now().timestamp() * 1000)
             }
-            yield f"data: {json.dumps({'type': 'initial_stats', 'data': initial_data})}\n\n"
+            yield f"data: {json.dumps({'type': 'initial_stats', 'data': initial_data}, ensure_ascii=False)}\n\n"
             
-            # Keep-alive 루프
-            ping_interval = 30  # 30초마다 핑 (안정성 향상)
+            # Production-optimized keep-alive loop
+            ping_interval = 30  # 30 seconds
+            max_connection_time = 3600  # 1 hour max connection time
             
             while True:
                 try:
-                    # 연결 상태 확인
+                    # Check if client disconnected
                     if await request.is_disconnected():
-                        print(f"❌ SSE disconnected: {client_id}")
+                        logger.info(f"SSE client disconnected: {client_id}")
                         break
                     
-                    # Keep-alive ping
-                    yield f"data: {json.dumps({'type': 'ping', 'timestamp': datetime.now().isoformat()})}\n\n"
+                    # Check connection duration
+                    if (datetime.now() - connection_start).seconds > max_connection_time:
+                        logger.info(f"SSE connection timeout: {client_id}")
+                        yield f"data: {json.dumps({'type': 'timeout', 'message': 'Connection timeout'}, ensure_ascii=False)}\n\n"
+                        break
                     
-                    # 30초 대기
+                    # Send keep-alive ping
+                    ping_count += 1
+                    ping_data = {
+                        'type': 'ping',
+                        'timestamp': datetime.now().isoformat(),
+                        'ping_count': ping_count,
+                        'uptime': (datetime.now() - connection_start).seconds
+                    }
+                    yield f"data: {json.dumps(ping_data, ensure_ascii=False)}\n\n"
+                    
+                    # Wait for next ping
                     await asyncio.sleep(ping_interval)
+                    
                 except asyncio.CancelledError:
-                    print(f"SSE ping cancelled for {client_id}")
+                    logger.info(f"SSE connection cancelled: {client_id}")
                     break
                 except Exception as e:
-                    print(f"SSE ping error for {client_id}: {e}")
+                    logger.error(f"SSE ping error for {client_id}: {e}")
                     break
                 
         except asyncio.CancelledError:
-            print(f"SSE connection cancelled for {client_id}")
+            logger.info(f"SSE connection cancelled: {client_id}")
         except Exception as e:
-            print(f"SSE error for {client_id}: {e}")
+            logger.error(f"SSE error for {client_id}: {e}")
         finally:
-            print(f"❌ SSE disconnected: {client_id}")
+            logger.info(f"SSE connection closed: {client_id}, duration: {(datetime.now() - connection_start).seconds}s")
     
     return StreamingResponse(
         event_generator(),
-        media_type="text/event-stream",
-        headers=get_cors_headers(request)
+        media_type="text/event-stream; charset=utf-8",
+        headers=get_sse_headers(request)
     )
 
 
