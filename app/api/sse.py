@@ -14,27 +14,31 @@ router = APIRouter(prefix="/sse", tags=["Server-Sent Events"])
 
 def get_cors_headers(request: Request) -> dict:
     """Get CORS headers for SSE"""
+    origin = request.headers.get('origin', '*')
     return {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Connection": "keep-alive",
         "Content-Type": "text/event-stream",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Credentials": "true",
         "X-Accel-Buffering": "no",
     }
 
 
 @router.options("/events")
-async def sse_events_options():
+async def sse_events_options(request: Request):
     """OPTIONS handler for CORS preflight"""
     from fastapi.responses import Response
+    origin = request.headers.get('origin', '*')
     return Response(
         status_code=200,
         headers={
-            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Origin": origin,
             "Access-Control-Allow-Methods": "GET, OPTIONS",
             "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Credentials": "true",
         }
     )
 

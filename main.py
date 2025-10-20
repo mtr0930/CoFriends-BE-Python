@@ -59,7 +59,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # 모든 origin 허용
-    allow_credentials=False,  # credentials를 사용하지 않음
+    allow_credentials=True,  # credentials 허용 (SSE를 위해)
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],

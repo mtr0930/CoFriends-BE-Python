@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class SecretsManager:
     """AWS Secrets Manager client wrapper"""
     
-    def __init__(self, region_name: str = "us-east-1"):
+    def __init__(self, region_name: str = "ap-northeast-2"):
         """
         Initialize Secrets Manager client
         
