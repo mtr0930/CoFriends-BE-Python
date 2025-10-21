@@ -5,8 +5,6 @@ pipeline {
         // AWS 설정 - IAM Role 사용 (EC2 인스턴스에 IAM Role 할당 필요)
         AWS_DEFAULT_REGION = 'ap-northeast-2'
         // IAM Role을 사용하므로 Jenkins에서 AWS 자격 증명 설정 불필요
-        
-        // 프로덕션 환경 설정
         ENVIRONMENT = 'prod'
         CORS_ORIGINS = 'http://54.180.71.13:3000,http://54.180.71.13:5173,https://buildpechatbot.com:5000,https://buildpechatbot.com:5173'
     }
