@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 5000
     ENVIRONMENT: str = "local"
+    TIMEZONE: str = "Asia/Seoul"  # 한국 시간대
     
     # PostgreSQL Configuration
     POSTGRES_HOST: str = "localhost"
@@ -22,7 +23,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "cofriends"
     
     # MongoDB Configuration
-    MONGODB_HOST: str = "mongodb"
+    MONGODB_HOST: str = "localhost"  # 로컬 개발 시 localhost 사용
     MONGODB_PORT: int = 27017
     MONGODB_USERNAME: str = "mongo"
     MONGODB_PASSWORD: str = "1234"

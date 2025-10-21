@@ -111,7 +111,8 @@ class VoteService:
         date_votes = {}
         date_vote_records = self.db.query(UserDateVote).all()
         for vote in date_vote_records:
-            date_str = vote.preferred_date.strftime("%Y-%m-%d")
+            # preferred_date가 이미 문자열이므로 strftime() 호출하지 않음
+            date_str = vote.preferred_date
             date_votes[date_str] = date_votes.get(date_str, 0) + 1
         
         return {
@@ -146,7 +147,7 @@ class VoteService:
             
             result = [{
                 "menu_votes": [vote.menu.menu_type for vote in menu_votes],
-                "date_votes": [vote.preferred_date.strftime("%Y-%m-%d") for vote in date_votes],
+                "date_votes": [vote.preferred_date for vote in date_votes],  # 이미 문자열이므로 strftime() 불필요
                 "emp_no": emp_no
             }]
             

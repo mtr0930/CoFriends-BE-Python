@@ -56,6 +56,7 @@ class UserMenuVote(Base):
     vote_id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.user_id"), nullable=False, index=True)
     menu_id = Column(BigInteger, ForeignKey("menu.menu_id"), nullable=False, index=True)
+    vote_month = Column(String(6), nullable=False, index=True)  # YYYYMM 형식
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
@@ -71,6 +72,7 @@ class UserPlaceVote(Base):
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.user_id"), nullable=False, index=True)
     place_id = Column(BigInteger, ForeignKey("place.place_id"), nullable=False, index=True)
+    vote_month = Column(String(6), nullable=False, index=True)  # YYYYMM 형식
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
@@ -86,6 +88,7 @@ class UserDateVote(Base):
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     emp_no = Column(String(50), nullable=False, index=True)
     preferred_date = Column(String(20), nullable=False)
+    vote_month = Column(String(6), nullable=False, index=True)  # YYYYMM 형식
     created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 
@@ -100,6 +103,7 @@ class PlaceVote(Base):
     menu_type = Column(String(100), nullable=True)
     action = Column(String(20), nullable=False)  # 'like', 'unlike'
     date = Column(String(20), nullable=False)
+    vote_month = Column(String(6), nullable=False, index=True)  # YYYYMM 형식
     created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 

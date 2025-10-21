@@ -9,6 +9,10 @@ from dotenv import load_dotenv
 # .env 파일 로드
 load_dotenv()
 
+# 한국 시간대 설정
+from app.utils.timezone_utils import set_korean_timezone
+set_korean_timezone()
+
 from app.core.config import settings
 from app.core.database import init_db, MongoDB, RedisClient
 # SSE 매니저 제거 - 단순한 SSE 구현 사용

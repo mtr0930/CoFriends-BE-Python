@@ -4,26 +4,59 @@
 
 ## Quick Start
 
-### 1. Local Development
+### 1. 로컬 개발 환경 (권장)
 
+**방법 1: 자동 설정 스크립트 사용**
 ```bash
-# Install dependencies
+# Windows
+start_local_dev.bat
+
+# 또는 Python으로 직접 실행
+python start_local_dev.py
+```
+
+**방법 2: 수동 설정**
+
+**uv 사용 (권장)**
+```bash
+# 1. 데이터베이스만 Docker로 실행
+docker-compose up -d postgres mongodb redis
+
+# 2. uv로 환경 설정
+uv venv
+uv pip install -r requirements.txt
+uv\Scripts\activate  # Windows
+
+# 3. 환경 변수 설정
+copy env.example .env
+
+# 4. FastAPI 서버 실행
+python run.py
+```
+
+**venv 사용**
+```bash
+# 1. 데이터베이스만 Docker로 실행
+docker-compose up -d postgres mongodb redis
+
+# 2. Python 환경 설정
 python -m venv venv
 venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 
-# Setup environment
+# 3. 환경 변수 설정
 copy env.example .env
 
-# Run server
+# 4. FastAPI 서버 실행
 python run.py
 ```
 
 **Server will start at: http://localhost:5000**
 
-### 2. Docker Compose (Recommended)
+### 2. Docker Compose (전체 컨테이너)
 
 ```bash
+# 모든 서비스 (데이터베이스 + FastAPI) 실행
 docker-compose up -d
 ```
 

@@ -1,0 +1,32 @@
+version: '3.8'
+
+# 로컬 개발 환경을 위한 오버라이드 설정
+# 이 파일은 docker-compose.yml과 자동으로 병합됩니다
+
+services:
+  # 로컬 개발용 데이터베이스만 실행 (FastAPI 앱은 제외)
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: cofriends
+
+  mongodb:
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      MONGO_INITDB_DATABASE: cofriends_chat
+
+  redis:
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 1234
+
+  # FastAPI 앱은 로컬에서 직접 실행하므로 제외
+  fastapi-app:
+    profiles:
+      - production

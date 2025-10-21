@@ -4,16 +4,12 @@ Constants used throughout the application
 
 # Default menu types
 DEFAULT_MENU_TYPES = [
-    "한식",
+    "돼지고기",
+    "소고기",
+    "양고기",
+    "회",
     "중식",
-    "일식",
-    "양식",
-    "분식",
-    "치킨",
-    "피자",
-    "햄버거",
-    "아시안",
-    "카페/디저트"
+    "일식"
 ]
 
 # Redis key prefixes

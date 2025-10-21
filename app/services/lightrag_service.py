@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional
 import logging
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Chroma
-from langchain.schema import Document
+from langchain_core.documents import Document
 import json
 from datetime import datetime
 
