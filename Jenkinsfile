@@ -2,11 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // AWS 설정 - Jenkins에서 AWS 자격 증명 설정 필요
+        // AWS 설정 - IAM Role 사용 (EC2 인스턴스에 IAM Role 할당 필요)
         AWS_DEFAULT_REGION = 'ap-northeast-2'
-        // 또는 Jenkins에서 AWS 자격 증명을 설정한 경우 아래 주석 해제
-        // AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-        // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        // IAM Role을 사용하므로 Jenkins에서 AWS 자격 증명 설정 불필요
         
         // 프로덕션 환경 설정
         ENVIRONMENT = 'prod'

@@ -64,7 +64,13 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: cofriends-fastapi
+    # IAM Role 사용을 위한 설정
+    # network_mode: "host"  # 다른 서비스와 충돌 가능
+    # privileged: true  # 보안상 권장하지 않음
     environment:
+      # IAM Role을 사용하므로 AWS 자격 증명 전달 불필요
+      # AWS_DEFAULT_REGION만 설정
+      AWS_DEFAULT_REGION: ap-northeast-2
       SERVER_HOST: 0.0.0.0
       SERVER_PORT: 5000
       ENVIRONMENT: prod
