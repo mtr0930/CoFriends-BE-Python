@@ -134,10 +134,13 @@ def load_secrets_to_environment():
         secrets_manager = SecretsManager()
         env_vars = secrets_manager.load_environment_variables(secret_mappings)
         
-        # Set environment variables
+        # Set environment variables only if they are not already set
         for key, value in env_vars.items():
-            os.environ[key] = value
-            logger.info(f"Set environment variable: {key}")
+            if not os.getenv(key):  # Only set if not already set
+                os.environ[key] = value
+                logger.info(f"Set environment variable: {key}")
+            else:
+                logger.info(f"Environment variable {key} already set, skipping")
         
         logger.info(f"Loaded {len(env_vars)} environment variables from Secrets Manager")
     else:
