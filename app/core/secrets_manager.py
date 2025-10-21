@@ -141,7 +141,7 @@ def load_secrets_to_environment():
         
         logger.info(f"Loaded {len(env_vars)} environment variables from Secrets Manager")
     else:
-        logger.info("Skipping Secrets Manager in non-production environment")
+        logger.info(f"Skipping Secrets Manager in {environment} environment")
 
 
 # Convenience function for direct secret access
