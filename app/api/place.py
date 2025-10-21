@@ -13,6 +13,7 @@ from app.schemas import (
 )
 from app.services.place_service import PlaceService
 from app.services.vote_service import VoteService
+from app.services.vote_integration_service import VoteIntegrationService
 # SSE 매니저 제거 - 단순한 SSE 구현 사용
 
 router = APIRouter(prefix="/places", tags=["Place"])
@@ -66,6 +67,27 @@ async def process_vote(
         
         # 🔥 실시간 업데이트: SSE 매니저 제거 (단순한 SSE 구현 사용)
         print(f"📊 Place vote: {request.place_id} by {request.emp_no} - {request.action}")
+        
+        # 벡터 DB에 투표 데이터 동기화
+        try:
+            integration_service = VoteIntegrationService()
+            
+            # 투표 데이터를 벡터 DB 형식으로 변환
+            vote_data = {
+                "emp_no": request.emp_no,
+                "place_name": response.place_nm if hasattr(response, 'place_nm') else f"Place_{request.place_id}",
+                "menu_type": response.menu_type if hasattr(response, 'menu_type') else "unknown",
+                "date": response.vote_date.strftime("%Y-%m-%d") if hasattr(response, 'vote_date') and response.vote_date else None,
+                "vote_type": "place_vote",
+                "action": request.action
+            }
+            
+            # 벡터 DB에 동기화
+            integration_service.sync_vote_to_vector_db(vote_data)
+            print(f"✅ Vote synced to vector DB for user {request.emp_no}")
+            
+        except Exception as e:
+            print(f"⚠️ Failed to sync vote to vector DB: {str(e)}")
         
         return response
     except ValueError as e:

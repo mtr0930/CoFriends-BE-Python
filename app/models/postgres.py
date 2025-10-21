@@ -89,6 +89,20 @@ class UserDateVote(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 
+class PlaceVote(Base):
+    """Place vote model for vector integration"""
+    __tablename__ = "place_votes"
+
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    emp_no = Column(String(50), nullable=False, index=True)
+    place_id = Column(BigInteger, nullable=False, index=True)
+    place_name = Column(String(200), nullable=False)
+    menu_type = Column(String(100), nullable=True)
+    action = Column(String(20), nullable=False)  # 'like', 'unlike'
+    date = Column(String(20), nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
+
+
 class RestaurantSuggestion(Base):
     """Restaurant suggestion model"""
     __tablename__ = "restaurant_suggestions"

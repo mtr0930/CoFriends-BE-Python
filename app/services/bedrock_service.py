@@ -17,7 +17,7 @@ class BedrockService:
         aws_region = os.getenv('AWS_REGION')
         model_id = os.getenv('BEDROCK_MODEL_ID')
         
-        print(f"🔍 Environment Variables Debug:")
+        print(f"Environment Variables Debug:")
         print(f"   AWS_ACCESS_KEY_ID: {aws_access_key[:10] if aws_access_key else 'None'}...")
         print(f"   AWS_SECRET_ACCESS_KEY: {aws_secret_key[:10] if aws_secret_key else 'None'}...")
         print(f"   AWS_REGION: {aws_region}")
@@ -33,7 +33,7 @@ class BedrockService:
         
         # 잘못된 모델 ID 강제 수정
         if "claude-sonnet-4" in self.model_id or "claude-3-5" in self.model_id:
-            print("⚠️ Invalid model ID detected, forcing correct model")
+            print("Invalid model ID detected, forcing correct model")
             self.model_id = "anthropic.claude-3-haiku-20240307-v1:0"  # 경량 모델
             self.region = "us-east-1"
         
@@ -45,13 +45,13 @@ class BedrockService:
                 aws_access_key_id=aws_access_key,
                 aws_secret_access_key=aws_secret_key
             )
-            print(f"✅ AWS Bedrock client initialized in region: {self.region}")
-            print(f"✅ Using model: {self.model_id}")
+            print(f"AWS Bedrock client initialized in region: {self.region}")
+            print(f"Using model: {self.model_id}")
         except NoCredentialsError:
-            print("❌ AWS credentials not found")
+            print("AWS credentials not found")
             self.bedrock_client = None
         except Exception as e:
-            print(f"❌ Error initializing Bedrock client: {str(e)}")
+            print(f"Error initializing Bedrock client: {str(e)}")
             self.bedrock_client = None
     
     def generate_response(self, prompt: str, max_tokens: int = 1000) -> Dict[str, Any]:
@@ -85,8 +85,8 @@ class BedrockService:
                 ]
             }
             
-            print(f"🚀 Sending request to Bedrock: {self.model_id}")
-            print(f"📝 Prompt: {prompt[:100]}...")
+            print(f"Sending request to Bedrock: {self.model_id}")
+            print(f"Prompt: {prompt[:100]}...")
             
             response = self.bedrock_client.invoke_model(
                 modelId=self.model_id,
@@ -99,7 +99,7 @@ class BedrockService:
             
             if 'content' in response_body and len(response_body['content']) > 0:
                 ai_response = response_body['content'][0]['text']
-                print(f"✅ Bedrock response received: {ai_response[:100]}...")
+                print(f"Bedrock response received: {ai_response[:100]}...")
                 
                 return {
                     "success": True,
@@ -117,7 +117,7 @@ class BedrockService:
         except ClientError as e:
             error_code = e.response['Error']['Code']
             error_message = e.response['Error']['Message']
-            print(f"❌ AWS Bedrock ClientError: {error_code} - {error_message}")
+            print(f"AWS Bedrock ClientError: {error_code} - {error_message}")
             
             return {
                 "success": False,
@@ -126,7 +126,7 @@ class BedrockService:
             }
             
         except Exception as e:
-            print(f"❌ Unexpected error in Bedrock: {str(e)}")
+            print(f"Unexpected error in Bedrock: {str(e)}")
             return {
                 "success": False,
                 "error": str(e),

@@ -33,6 +33,19 @@ def get_sse_headers(request: Request) -> dict:
         "X-Frame-Options": "DENY",
     }
 
+def get_cors_headers(request: Request) -> dict:
+    """Get CORS headers for SSE"""
+    origin = request.headers.get('origin', '*')
+    return {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Credentials": "true",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Content-Type": "text/event-stream; charset=utf-8",
+    }
+
 
 @router.options("/events")
 async def sse_events_options(request: Request):

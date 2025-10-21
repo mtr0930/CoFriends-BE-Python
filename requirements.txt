@@ -13,3 +13,14 @@ python-multipart>=0.0.18
 boto3>=1.35.0
 botocore>=1.35.0
 
+# Hybrid AI Recommendation System
+chromadb>=1.2.1
+sentence-transformers>=5.1.1
+neo4j>=6.0.2
+pandas>=2.3.1
+scikit-learn>=1.7.2
+implicit>=0.7.2
+langchain>=0.3.26
+langchain-openai>=0.3.35
+langchain-community>=0.3.27
+

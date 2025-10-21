@@ -14,7 +14,7 @@ from app.schemas import (
     RestaurantSuggestionListResponse
 )
 
-router = APIRouter(prefix="/places", tags=["Restaurant Suggestions"])
+router = APIRouter(prefix="/restaurant-suggestions", tags=["Restaurant Suggestions"])
 
 
 async def send_sse_event(event_type: str, data: dict):

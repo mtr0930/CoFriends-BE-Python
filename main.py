@@ -4,6 +4,10 @@ FastAPI main application
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+# .env 파일 로드
+load_dotenv()
 
 from app.core.config import settings
 from app.core.database import init_db, MongoDB, RedisClient
@@ -55,12 +59,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS - 모든 origin 허용 (SSE 호환성을 위해)
+# Configure CORS - 개발 환경용 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 모든 origin 허용
-    allow_credentials=True,  # credentials 허용 (SSE를 위해)
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173", 
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "https://buildpechatbot.com",
+        "http://buildpechatbot.com"
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
